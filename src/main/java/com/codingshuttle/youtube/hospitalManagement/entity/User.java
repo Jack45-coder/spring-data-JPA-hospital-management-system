@@ -1,11 +1,10 @@
 package com.codingshuttle.youtube.hospitalManagement.entity;
 
+import com.codingshuttle.youtube.hospitalManagement.entity.type.AuthProviderType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +15,9 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@Table(name = "app_user")
+@Table(name = "app_user", indexes = {
+        @Index(name = "idx_provider_id, provider_type", columnList = "providerId, providerType")
+})
 public class User implements UserDetails {
 
     public static User builder;
@@ -27,6 +28,11 @@ public class User implements UserDetails {
     @JoinColumn(unique = true)
     private String username;
     private String password;
+
+    private String providerId;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProviderType providerType;
 
 
     @Override
