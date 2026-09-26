@@ -16,8 +16,11 @@ import java.util.Set;
 @AllArgsConstructor
 public class Doctor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne
+    @MapsId
+    private User user;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -25,13 +28,15 @@ public class Doctor {
     @Column(length = 100)
     private String specialization;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(unique = true, length = 100)
     private String email;
 
     @ManyToMany(mappedBy = "doctors")
+    @Builder.Default
     private Set<Department> departments = new HashSet<>();
 
     @OneToMany(mappedBy = "doctor")
+    @Builder.Default
     private List<Appointment> appointments = new ArrayList<>();
 
 }

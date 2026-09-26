@@ -12,10 +12,10 @@ spring:
         client-id: ${GOOGLE_CLIENT_ID}
         client-secret: ${GOOGLE_CLIENT_SECRET}
       github:
-        client-id: ${GITHUB_CLIENT_SECRET}
+        client-id: ${GITHUB_CLIENT_ID}
         client-secret: ${GITHUB_CLIENT_SECRET}
       twitter:
-        client-id: ${TWITTER_CLIENT_SECRET}
+        client-id: ${TWITTER_CLIENT_ID}
         client-secret: ${TWITTER_CLIENT_SECRET}
         redirect-uri: "{baseUrl}/login/oauth2/code/twitter"
         authorization-grant-type: authorization_code

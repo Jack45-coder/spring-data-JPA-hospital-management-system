@@ -32,8 +32,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         String registrationId = token.getAuthorizedClientRegistrationId();
 
-        authService.handleOAuthLoginRequest(oAuth2User, registrationId);
-
         ResponseEntity<LoginResponseDto> loginResponse = authService.handleOAuthLoginRequest(oAuth2User, registrationId);
 
         response.setStatus(loginResponse.getStatusCode().value());

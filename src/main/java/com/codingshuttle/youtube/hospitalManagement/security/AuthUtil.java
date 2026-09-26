@@ -30,10 +30,9 @@ public class AuthUtil {
                 .subject(user.getUsername())
                 .claim("userId", user.getId().toString())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() * 1000*60*10))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24))
                 .signWith(getSecretKey())
-                .compact()
-        ;
+                .compact();
     }
 
     public String getUsernameFromToken(String token) {
@@ -58,10 +57,13 @@ public class AuthUtil {
     public String determineProviderIdFromOAuth2User(OAuth2User oAuth2User, String registrationId){
         String providerId = switch (registrationId.toLowerCase()){
             case "google" -> oAuth2User.getAttribute("sub");
-            case "github" -> oAuth2User.getAttribute("id").toString();
+            case "github" -> {
+                Object id = oAuth2User.getAttribute("id");
+                yield id != null ? id.toString() : null;
+            }
             default -> {
                 log.error("Unsupported OAuth provider: {}", registrationId);
-                throw new IllegalArgumentException("Unsupported OAuth2 provider: " +registrationId);
+                throw new IllegalArgumentException("Unsupported OAuth2 provider: " + registrationId);
             }
         };
         if (providerId == null || providerId.isBlank()) {
@@ -71,15 +73,22 @@ public class AuthUtil {
         return providerId;
     }
 
-    public String determineProviderIdFromOAuth2User(OAuth2User oAuth2User, String registrationId, String providerId){
+    public String determineUsernameFromOAuth2User(OAuth2User oAuth2User, String registrationId, String providerId){
         String email = oAuth2User.getAttribute("email");
         if (email != null && !email.isBlank()){
             return email;
         }
         return switch (registrationId.toLowerCase()){
             case "google" -> oAuth2User.getAttribute("sub");
-            case "github" -> oAuth2User.getAttribute("login");
+            case "github" -> {
+                Object login = oAuth2User.getAttribute("login");
+                yield login != null ? login.toString() : providerId;
+            }
             default -> providerId;
         };
+    }
+
+    public String determineProviderIdFromOAuth2User(OAuth2User oAuth2User, String registrationId, String providerId){
+        return determineUsernameFromOAuth2User(oAuth2User, registrationId, providerId);
     }
 }
